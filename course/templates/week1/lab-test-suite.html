@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load url from future %}
+
+{% block 'content' %}
+<div class="page-header">
+  <h1>Lab 1: Parser for C++ <small>deadline: 2012-02-01</small></h1>
+</div>
+
+<ul class="nav nav-tabs">
+  <li><a href="{% url 'course:week1/lab' %}">Lab PM</a></li>
+  <li class="active"><a href="{% url 'course:week1/lab/test-suite' %}">Test suite</a></li>
+  <li><a href="{% url 'course:week1/lab/submit' %}">Submission</a></li>
+</ul>	  
+
+<h2>Introduction</h2>
+
+<p>Before you submit lab 1, your solution must pass the testsuite. This document
+describes how to obtain and use this testsuite.
+
+<p>The testsuite has now been extended with more good and bad test
+programs, and more tests will be added continously. This is done as a service to
+you, so that you can check your solution before submitting it. The old
+lab1-testsuite.tar.gz is still available, but please use the new one as
+described below.
+
+<h2>Preparations</h2>
+
+<p>You will only need to do this this part once.
+
+<ul>
+<li>Download lab1-testsuite-larger.tar.gz.
+<li>Unpack the downloaded file:
+  <pre>$ tar -zxf lab1-testsuite-larger.tar.gz</pre>
+<li>Enter the lab1-testsuite-larger directory:
+  <pre>$ cd lab1-testsuite-larger</pre>
+<li>Compile the test program:
+  <ptr>$ ghc --make -o progs-test-lab1 progs-test-lab1.hs</pre>
+</ul>
+
+<h2>Running the testsuite</h2>
+
+<p>This is what you need to do to test your grammar.
+
+<ul>
+<li>Enter the lab1-testsuite-larger directory (if you are not there already):
+  <pre>$ cd lab1-testsuite-larger</pre>
+<li>Run the progs-test-lab1 with the path to your .cf file:
+  <pre>$ ./progs-test-lab1 path/to/your/file.cf</pre>
+(where path/to/your/file.cf) is the location of your grammar file.
+</ul>
+
+<p>NOTE: The start category (entry point) of your grammar must be called Program.
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load url from future %}
+{% load active %}
+
+{% block 'content' %}
+<div class="page-header">
+  <h1>Exercise on the introduction and grammars</h1>
+</div>
+<ul class="nav nav-tabs">
+  {% menuitem 'course:week1/exercises/1' "Exercise 1" %}
+  {% menuitem 'course:week1' "Exercise 2" %}
+</ul>	  
+
+
+<p>The following C code has around six errors (some of them depend on what you
+count as an error). Locate the errors and explain at which compiler phase they
+are (or should be) revealed.
+  
+<pre>
+/* this is a buggy hello world program */
+{{ code }}
+</pre>
+
+<form action="." method="POST" accept-charset="utf-8">
+<form>
+{% csrf_token %}
+<table class="table">
+  <tr>
+    <th>
+    <th>No error
+    <th>Syntax error
+    <th>Type error
+    <th>Runtime error
+  {% for field in form %}
+  <tr>
+    <td><code>{{ field.label|safe }}</code>
+    {% for choice in field.field.choices %}
+    <td>
+      <input type="radio" id="id_{{ field.html_name }}_{{ forloop.counter0 }}"
+             value="{{ choice.0 }}"
+	     {% ifequal field.data choice.0 %}
+             checked="checked"
+	     {% endifequal %}
+             name="{{ field.html_name }}" />
+    {% endfor %}
+    {% ifequal status "check" %}
+    <td>
+      {% if field.errors %}<i class="icon-remove"></i>
+      {% else %}<i class="icon-ok"></i>{% endif %}
+    {% endifequal %}
+  {% endfor %}
+</table>
+<p>
+  <button class="btn btn-primary" type="submit" name="_check">Check</button>
+</p>
+</form>
+
+{% endblock %}

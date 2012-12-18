@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block 'content' %}
+<div class="page-header">
+  <h1>Exercise on the introduction and grammars</h1>
+</div>
+
+<h2>Exercise 1</h2>
+
+<p>The following C code has around six errors (some of them depend on what you
+count as an error). Locate the errors and explain at which compiler phase they
+are (or should be) revealed.
+  
+<pre>
+/* this is a buggy hello world program */
+int main ()
+{
+    int i ;
+    int j = k + 1 ;
+    int a[] = {1,2,3}
+    j = a + 6 ;
+    a[4] = 7 ;
+    printf(hello world\n) ; 
+}</pre>
+
+
+<form>
+<table class="table">
+  <tr>
+    <th>line
+    <th>no error
+    <th>syntax error
+    <th>type error
+    <th>runtime error
+  <tr>
+    <td><code>int main ()</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>{</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;int i;</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;int j = k + 1;</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;int a[] = {1,2,3}</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;j = a + 6 ;</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;a[4] = 7 ;</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>&nbsp;&nbsp;&nbsp;&nbsp;printf(hello world\n) ;</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+  <tr>
+    <td><code>}</code>
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td><input type="radio" name="line1" value="no-error" />
+    <td>
+</table>
+      
+  
+</form>
+
+
+<h2>Exercise 2</h2>
+<p>Decode the following representation of a JVM program to show (a) the
+    corresponding assembly code and (b) a Java expression from which it can be
+    obtained.
+
+<pre>0001 0000 1111 1111 0001 0000 0010 0000
+0110 0000 0001 0000 0000 1001 0110 1000</pre>
+All these codes can be found in Lecture 1. The full set of codes can be found in
+    the on-line JVM specification in
+    http://java.sun.com/docs/books/vmspec/2nd-edition/html/Instructions2.doc.html
+
+<h2>Exercise 3</h2>
+<p>Show the parse tree and abstract syntax tree of the following statement in
+  the grammar constructed in Lecture 2.</p>
+
+<pre>while (x > y) y = x = x + 3 ;</pre>
+
+<h2>Exercise 4</h2>
+<p>BNFC translates the separator macro into three rules, as follows:
+
+<pre>
+                            [Exp] ::= ;
+separator Exp "," ;  --->   [Exp] ::= Exp ;
+                            [Exp] ::= Exp "," [Exp] ;</pre>
+
+<p>The resulting grammar, however, is not quite accurate. Why? Design a
+  different translation that would solve the problem.</p>
+
+<h2>Exercise 5</h2>
+<p>Implement a parser for Lisp in BNFC. It should be able to parse the code
+  example in <a href="
+  http://lib.store.yahoo.net/lib/paulgraham/jmc.lisp">http://lib.store.yahoo.net/lib/paulgraham/jmc.lisp</a>
+  – which is actually a complete Lisp interpreter!</p>
+{% endblock %}

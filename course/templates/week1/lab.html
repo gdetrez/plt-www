@@ -1,0 +1,557 @@
+{% extends 'base.html' %}
+{% load url from future %}
+
+{% block 'content' %}
+<div class="page-header">
+  <h1>Lab 1: Parser for C++ <small>deadline: 2012-02-01</small></h1>
+</div>
+
+<ul class="nav nav-tabs">
+  <li class="active"><a href="{% url 'course:week1/lab' %}">Lab PM</a></li>
+  <li><a href="{% url 'course:week1/lab/test-suite' %}">Test suite</a></li>
+  <li><a href="{% url 'course:week1/lab/submit' %}">Submission</a></li>
+</ul>	  
+
+<h2>Summary</h2>
+
+<p>The objective of this lab is to write a parser for a fragment of
+  the C++ programming language. The parser should return an abstract
+  syntax tree at success, and report an error with a line number at
+  failure.</p>
+
+<p>Before the lab can be submitted, the parser has to pass some
+  tests, which are given on the course web page via links later in
+  this document.</p>
+
+<p>The recommended implementation of the parser is via a BNF grammar
+  processed by the BNF Converter (BNFC) tool. The approximate size of
+  the parser source code should be 100 rules.
+  
+<p>With BNFC, no more files than the grammar have to be written and
+  submitted by the lab groups.</p>
+
+<h2>Method</h2>
+
+<P>Build the grammar gradually, so that you can parse the six test
+  files in the given order: as your first goal,
+  parse <A HREF="test/hello.cc">the first test file</A>. then the
+  second, and so on.</P>
+
+<P>When you have passed one level, just try to parse the next example
+  with your current parser and examine the line at which it fails. In
+  this way, you will find out what new grammar rules you need.</P>
+
+<P>After treating the six tests, run
+  the <A HREF="testscript/index.html">test script</A> to make your
+  parser perfect</P>
+
+<P>You can use any code generator (Haskell, Java, C,...) from BNFC. It
+  doesn't need to be the same language as you plan to use in later
+  labs. However, if you use Haskell, you have the advantage of <B>info
+    files</B>, which tell you exactly where the conflicts are. Assuming
+  your grammar file is <CODE>CPP.cf</CODE> and you have
+  called <CODE>bnfc</CODE> on it, you can create an info file from the
+  generated Happy file:</P>
+
+<PRE>happy -i ParCPP.y</PRE>
+
+<P>The info file is now in <CODE>ParCPP.info</CODE>. Moreover, you can
+  produce a <B>debugging parser</B> by </P>
+<PRE>happy -da ParCPP.y</PRE>
+
+<P>Running this parser shows a trace of the LR actions performed
+  during parsing.</P>
+
+<h2>Language specification</h2>
+
+<P>It is suitable to explain and advisable to implement the parser
+  top-down, starting with the largest units and proceeding to smaller
+  ones.</P>
+
+<P>The specification differs in some places from the official C++
+  specification.</P>
+
+<P>To help you get going, we have marked with a bold (<B>1</B>) those
+  rules that are needed to parse <A HREF="test/hello.cc">the first test
+    file</A>.</P>
+
+<H2>Programs</H2>
+
+<P>
+  A program is a sequence of definitions. (<B>1</B>)
+</P>
+<P>
+  A program may also contain comments and preprocessor directives,
+  which are just ignored by the parser (see below). (<B>1</B>)
+</P>
+
+<H2>Definitions</H2>
+
+<P>
+  1. A function definition has a type, a name, an argument list, and a body.
+  (<B>1</B>)
+  A function can optionally be prefixed by <CODE>inline</CODE>. Example:
+</P>
+
+<PRE>
+  inline int foo(double x, int y)
+  {
+  return y + 9 ;
+  }
+</PRE>
+
+<P>
+  2. Many statements can be used as top-level definitions:
+</P>
+
+<UL>
+  <LI><CODE>typedef</CODE> statements
+  <LI>variable declarations and initializations
+  <LI><CODE>struct</CODE> declarations
+</UL>
+
+<P>
+  3. Finally, definitions for using qualified constants are allowed, e.g.
+</P>
+
+<PRE>
+  using std::vector ;
+</PRE>
+
+<H2>Argument lists, declarations, and function bodies</H2>
+
+<P>
+  An argument list is a comma-separated list of argument declarations.
+  It is enclosed in parentheses <CODE>(</CODE> and <CODE>)</CODE>. (<B>1</B>)
+</P>
+<P>
+  An argument declaration always has a type. This type is optionally
+  followed by an identifier or an identifier and an initialization,
+  and optionally preceded by the specifier <CODE>const</CODE>. The following
+  are examples of argument declarations.
+</P>
+
+<PRE>
+  int
+  int x
+  int x = 5
+  const int&amp; x
+</PRE>
+
+<P>
+  Notice that argument declarations with multiple variables
+  (<CODE>int x, y</CODE>) are not included. A declaration that occurs
+  as a statement (as shown below), can also have multiple variables.
+  But it must have at least one variable.
+</P>
+<P>
+  A function body is either a list of statements enclosed
+  in curly brackets <CODE>{</CODE> and <CODE>}</CODE> (<B>1</B>), 
+  or an empty body consisting
+  of a semicolon <CODE>;</CODE>.
+</P>
+
+<H2>Statements</H2>
+
+<P>
+  Any expression followed by a semicolon <CODE>;</CODE> can be used as a
+  statement. (<B>1</B>)
+</P>
+<P>
+  Any declaration followed by a semicolon <CODE>;</CODE> can be used as a
+  statement.
+  Declarations have the same form as argument declarations in functions,
+  except that they can have more than one variable.
+</P>
+<P>
+  Statements returning an expression (<B>1</B>), for example
+</P>
+
+<PRE>
+  return i + 9 ;
+</PRE>
+
+<P>
+  While loops, with an expression in parentheses followed by a statement, for
+  example:
+</P>
+
+<PRE>
+  while (i &lt; 10) ++i ;
+</PRE>
+
+<P>
+  Do-while loops, with an expression in parentheses after the loop body, for
+  example:
+</P>
+
+<PRE>
+  do ++i ; while (i &lt; 10) ;
+</PRE>
+
+<P>
+  For loops, with a declaration and two expressions in parentheses followed
+  by a statement. For example:
+</P>
+
+<PRE>
+  for (int i = 0 ; i != 10 ; ++i) k = k + i ;
+</PRE>
+
+<P>
+  We do not require that any of the fields in parentheses may be empty.
+</P>
+<P>
+  Conditionals: <CODE>if</CODE> with an expression in parentheses followed by
+  a statement and optionally by <CODE>else</CODE> and a statement. Examples:
+</P>
+
+<PRE>
+  if (x &gt; 0) return x ;
+  
+  if (x &gt; 0) return x ; else return y ;
+</PRE>
+
+<P>
+  Blocks: any list of statement (including empty list) between 
+  curly brackets. For instance,
+</P>
+
+<PRE>
+  { 
+  int i = 2 ;
+  {
+  }
+  i++ ;
+  }
+</PRE>
+
+<P>
+  Type definitions: a type and a name for it. Example:
+</P>
+
+<PRE>
+  typedef vector&lt;string&gt; Text ;
+</PRE>
+
+<P>
+  Structure definitions: a name and a list of declarations. Example:
+</P>
+
+<PRE>
+  struct Student_info {
+  string name;
+      double final;
+      vector&lt;double&gt; homework;
+    } ;  
+</PRE>
+
+<P>
+Notice that the semicolon is obligatory in the end of a structure definition.
+Otherwise, semicolons are not used after curly brackets - but they are
+obligatory in all statements and definitions not ending with curly
+brackets.
+</P>
+
+<H2>Expressions</H2>
+
+<P>
+The following table gives the expressions and their precedence levels.
+Infix operators are assumed to be left-associative. The arguments in
+a function call can be expressions of any level.
+Otherwise, the
+subexpressions are assumed to be one precedence level above of 
+the main expression.
+</P>
+<P>
+<B>Note</B>. The table is not exactly the same as in the C++ standard.
+</P>
+
+<TABLE BORDER="1" CELLPADDING="4">
+<TR>
+<TH>level</TH>
+<TH>expression forms</TH>
+<TH COLSPAN="2">explanation</TH>
+</TR>
+<TR>
+<TD ALIGN="center">16</TD>
+<TD>literal</TD>
+<TD>atomic expressions</TD>
+</TR>
+<TR>
+<TD ALIGN="center">15</TD>
+<TD><CODE>e[i]</CODE>, <CODE>c::i</CODE></TD>
+<TD>indexing and qualified constants</TD>
+</TR>
+<TR>
+<TD ALIGN="center">15</TD>
+<TD><CODE>e(e,...,e)</CODE></TD>
+<TD>function call</TD>
+</TR>
+<TR>
+<TD ALIGN="center">14</TD>
+<TD><CODE>e.e</CODE>, <CODE>e-&gt;e</CODE></TD>
+<TD>structure projection</TD>
+</TR>
+<TR>
+<TD ALIGN="center">14</TD>
+<TD><CODE>e++</CODE>, <CODE>e--</CODE>, <CODE>*e</CODE></TD>
+<TD>in/decrement, dereferencing</TD>
+</TR>
+<TR>
+<TD ALIGN="center">13</TD>
+<TD><CODE>++e</CODE>, <CODE>--e</CODE>, <CODE>!e</CODE></TD>
+<TD>in/decrement, dereferencing, negation</TD>
+</TR>
+<TR>
+<TD ALIGN="center">12</TD>
+<TD><CODE>e*e</CODE>, <CODE>e/e</CODE>, <CODE>e%e</CODE></TD>
+<TD>multiplication, division, remainder</TD>
+</TR>
+<TR>
+<TD ALIGN="center">11</TD>
+<TD><CODE>e+e</CODE>, <CODE>e-e</CODE></TD>
+<TD>addition, subtraction</TD>
+</TR>
+<TR>
+<TD ALIGN="center">10</TD>
+<TD><CODE>e&lt;&lt;e</CODE>, <CODE>e&gt;&gt;e</CODE></TD>
+<TD>left and right shift</TD>
+</TR>
+<TR>
+<TD ALIGN="center">9</TD>
+<TD><CODE>e&lt;e</CODE>, <CODE>e&gt;e</CODE>, <CODE>e&gt;=e</CODE>, <CODE>e&lt;=e</CODE></TD>
+<TD>comparison</TD>
+</TR>
+<TR>
+<TD ALIGN="center">8</TD>
+<TD><CODE>e==e</CODE>, <CODE>e!=e</CODE></TD>
+<TD>(in)equality</TD>
+</TR>
+<TR>
+<TD ALIGN="center">4</TD>
+<TD><CODE>e&amp;&amp;e</CODE></TD>
+<TD>conjunction</TD>
+</TR>
+<TR>
+<TD ALIGN="center">3</TD>
+<TD><CODE>e||e</CODE></TD>
+<TD>disjunction</TD>
+</TR>
+<TR>
+<TD ALIGN="center">2</TD>
+<TD><CODE>e=e</CODE>, <CODE>e+=e</CODE>, <CODE>e-=e</CODE></TD>
+<TD>assignment</TD>
+</TR>
+<TR>
+<TD ALIGN="center">2</TD>
+<TD><CODE>e ? e : e</CODE></TD>
+<TD>conditional</TD>
+</TR>
+<TR>
+<TD ALIGN="center">1</TD>
+<TD><CODE>throw e</CODE></TD>
+<TD>exception</TD>
+</TR>
+</TABLE>
+
+<P>
+Expressions needed for test (<B>1</B>): 
+integer and string literal, qualified constant, left shift.
+</P>
+<P>
+Notice that it is syntactically permitted to increment and assign
+a value to any expression, not just variables (and other so-called
+lvalues).
+</P>
+
+<H2>Qualified constants and template instantiations</H2>
+
+<P>
+<B>Qualified constants</B> are constant names separated
+by <CODE>::</CODE>. Names can
+be identifiers but also <B>template instantiations</B>, of the form
+</P>
+
+<PRE>
+    ident &lt; typelist &gt;
+</PRE>
+
+<P>
+where a typelist is a comma-separated list of types. Thus possible
+qualified constants include
+</P>
+
+<PRE>
+    std::cout
+    std::vector&lt;int&gt;::const_iterator
+</PRE>
+
+<P>
+One simple way to implement qualified constants is as
+nonempty lists separated by <CODE>::</CODE>. The elements of the list
+are identifiers and template instantiations. Single identifier
+expressions come out as a special case of these lists.
+</P>
+<P>
+Qualified constants, but without templates, are needed in (<B>1</B>).
+</P>
+
+<H2>Types</H2>
+
+<P>
+Types are either qualified constants (including plain identifiers) or 
+built-in types, of which we include the following:
+</P>
+
+<PRE>
+    bool
+    double
+    int
+    void
+</PRE>
+
+<P>
+Only the type <CODE>int</CODE> is needed in (<B>1</B>).
+</P>
+
+<H2>Literals</H2>
+
+<P>
+We include double-quoted string literals, integer literals, and floating point
+literals.
+</P>
+<P>
+A string literal may consist of many can be concatenated strings
+and in this way divided over lines:
+</P>
+
+<PRE>
+    "hello " "my little "
+    "world"
+  
+</PRE>
+
+<H2>Identifiers</H2>
+
+<P>
+An identifier is a letter followed by a list of letters, digits, 
+and underscores.
+</P>
+
+<H2>Comments</H2>
+
+<P>
+There are three kinds of comments.
+</P>
+
+<UL>
+<LI>anything between tokens <CODE>/*</CODE> and <CODE>*/</CODE>
+<LI>anything from token <CODE>//</CODE> to the end of a line or the file
+<LI>anything from token <CODE>#</CODE> to the end of a line or the file
+  (preprocessor directive)
+<P></P>
+Comments cannot be nested.
+<P></P>
+Comments are needed in (<B>1</B>).
+</UL>
+
+<h2>Test programs</h2>
+
+<P>
+These programs are original code from the web page of the book
+<I>Accelerated C++</I> (A. Koenig &amp; B. Moo, Addison-Wesley, 2000).
+</P>
+
+<UL>
+<LI><A HREF="test/hello.cc">First</A>: "hello world"
+<P></P>
+<LI><A HREF="test/greet.cc">Second</A>: ask the user's name and say hello to her
+<P></P>
+<LI><A HREF="test/med.cc">Third</A>: compute the grade of a student
+<P></P>
+<LI><A HREF="test/grade.cc">Fourth</A>: a smarter way to compute the grade
+<P></P>
+<LI><A HREF="test/palin.cc">Fifth</A>: test if a string is a palindrome
+<P></P>
+<LI><A HREF="test/grammar.cc">Sixth</A>: random-generate English sentences
+</UL>
+
+<P>
+Once again: build the grammar gradually so that you can parse
+these files in this order.
+</P>
+
+<h2>Success criteria</h2>
+
+<P>
+Your grammar must pass the <A HREF="testscript/index.html">test suite</A>.
+The test suite contains the example programs, as well
+as a number of programs which your parser must reject.
+</P>
+<P>
+The maximum number of 10 shift/reduce conflicts is permitted.
+The minimum of 2 is almost unavoidable (the "dangling <CODE>else</CODE>",
+and template instantiation vs. less-than operator). 
+But reduce/reduce conflicts are forbidden.
+</P>
+
+<h2>Submission</h2>
+
+<P>
+Submit your lab
+using <A HREF="https://fire.cs.chalmers.se:8009/cgi/Fire-proglang">Fire</A>.
+Do not submit your solution before it passes the test suite - it will
+be returned automatically.
+</P>
+<P>
+If you have any problems getting the test program to run, 
+or if you think that there is an error in the test suite,
+contact the teachers of the course.
+</P>
+
+<h2>C++ features</h2>
+
+<P>
+Assuming you know some C but not C++, here is a summary of the extra features 
+of C++ involved in this lab.
+</P>
+<P>
+Qualified names: <CODE>s::n</CODE>, where <CODE>s</CODE> is a name space or a
+class.
+</P>
+<P>
+<CODE>using</CODE> directives: license to use an unqualified name from a name
+space.
+</P>
+<P>
+IO streams: <CODE>cout</CODE> for output, <CODE>cin</CODE> for input. Output is
+produced by the left shift operator, input is read by the right shift.
+Example from <A HREF="test/greet.cc">the second program</A>:
+</P>
+
+<PRE>
+    // read the name
+    std::string name;     // define `name'
+    std::cin &gt;&gt; name;     // read into `name'
+  
+    // write a greeting
+    std::cout &lt;&lt; "Hello, " &lt;&lt; name  &lt;&lt; "!" &lt;&lt; std::endl;
+</PRE>
+
+<P>
+Templates, e.g. generic types: <CODE>vector&lt;int&gt;</CODE> is a vector of
+integers.
+</P>
+<P>
+Arguments passed by reference (<CODE>&amp;</CODE>), 
+with the possibility of forbidding modification (<CODE>const</CODE>), e.g.
+(from <A HREF="test/grammar.cc">the sixth program</A>)
+</P>
+
+<PRE>
+    gen_aux(const Grammar&amp; g, const string&amp; word,
+    vector&lt;string&gt;&amp; ret)
+</PRE>
+
+{% endblock %}
